@@ -17,7 +17,8 @@ def iou(box, clusters):
     box_area = box[0] * box[1]
     cluster_area = clusters[:, 0] * clusters[:, 1]
 
-    iou_ = intersection / (box_area + cluster_area - intersection)
+    # iou_ = intersection / (box_area + cluster_area - intersection)
+    iou_ = np.true_divide(intersection, box_area + cluster_area - intersection)
 
     return iou_
 
@@ -60,7 +61,7 @@ def kmeans(boxes, k, dist=np.median):
 
     np.random.seed()
 
-    # the Forgy method will fail if the whole array contains the same rows
+    # the method will fail if the whole array contains the same rows
     clusters = boxes[np.random.choice(rows, k, replace=False)]
 
     while True:
@@ -73,7 +74,10 @@ def kmeans(boxes, k, dist=np.median):
             break
 
         for cluster in range(k):
-            clusters[cluster] = dist(boxes[nearest_clusters == cluster], axis=0)
+            # clusters[cluster] = dist(boxes[nearest_clusters == cluster], axis=0)
+            k_cluster = boxes[np.nonzero(nearest_clusters == cluster)]
+            if len(k_cluster) != 0:
+                clusters[cluster] = dist(k_cluster, axis=0)
 
         last_clusters = nearest_clusters
 
